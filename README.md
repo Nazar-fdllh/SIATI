@@ -1,70 +1,81 @@
-# Getting Started with Create React App
+# SIATI — Sistem Informasi Absensi & Cuti Karyawan
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Aplikasi fullstack monorepo untuk mengelola absensi dan cuti karyawan.
 
-## Available Scripts
+## Tech Stack
 
-In the project directory, you can run:
+- **Frontend**: React 19 + Vite + MUI 6 + Redux Toolkit
+- **Backend**: Express.js + Knex.js + JWT
+- **Database**: PostgreSQL (Neon)
+- **Deployment**: Vercel
 
-### `npm start`
+## Struktur Monorepo
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+```
+siati/
+├── client/          # React Frontend (Vite)
+├── server/          # Express Backend
+├── shared/          # Shared utilities & constants
+├── api/             # Vercel serverless entry
+├── vercel.json      # Vercel config
+└── package.json     # Root (npm workspaces)
+```
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Quick Start
 
-### `npm test`
+### Prerequisites
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- Node.js >= 18
+- PostgreSQL (local atau Neon)
 
-### `npm run build`
+### Install Dependencies
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```bash
+npm install
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Setup Environment
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```bash
+cp .env.example .env
+# Edit .env dengan konfigurasi database dan JWT secret
+```
 
-### `npm run eject`
+### Run Database Migrations
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+```bash
+npm run db:migrate
+npm run db:seed
+```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Run Development
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+```bash
+npm run dev
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Frontend: http://localhost:3000
+Backend API: http://localhost:5000
 
-## Learn More
+### Default Login
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```
+Email: admin@siati.com
+Password: Admin@123
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Scripts
 
-### Code Splitting
+| Command | Deskripsi |
+|---|---|
+| `npm run dev` | Jalankan client & server bersamaan |
+| `npm run dev:client` | Jalankan frontend saja |
+| `npm run dev:server` | Jalankan backend saja |
+| `npm run build` | Build frontend untuk production |
+| `npm run db:migrate` | Jalankan migrasi database |
+| `npm run db:seed` | Jalankan seed data |
+| `npm run db:reset` | Reset database (rollback + migrate + seed) |
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## License
 
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+MIT
