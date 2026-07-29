@@ -19,4 +19,8 @@ export const settingsApi = {
 
   // Audit Logs
   getAuditLogs: (params) => axiosInstance.get('/settings/audit-logs', { params }),
+
+  // System Config
+  getConfig: () => axiosInstance.get('/settings/config'),
+  updateConfig: (data) => axiosInstance.put('/settings/config', data),
 };

@@ -45,8 +45,17 @@ async function checkIn(employeeId, data) {
 
   // Validate geolocation
   let isValidLocation = true;
+  let isAllowedIp = true;
   if (data.latitude && data.longitude) {
     isValidLocation = await validateLocation(data.latitude, data.longitude);
+  }
+  if (data.ipAddress) {
+    isAllowedIp = await validateIpAddress(data.ipAddress);
+  }
+
+  // Reject if not in office mode and both validations fail (assuming office mode for now)
+  if (!isValidLocation && !isAllowedIp) {
+    throw new AppError('Lokasi atau IP Anda tidak valid untuk melakukan absensi.', 400, 'INVALID_LOCATION');
   }
 
   const attendanceData = {
@@ -328,6 +337,31 @@ function haversineDistance(lat1, lon1, lat2, lon2) {
 
 function toRad(deg) {
   return deg * (Math.PI / 180);
+}
+
+/**
+ * Validate IP Address against allowed ranges
+ */
+async function validateIpAddress(ip) {
+  if (!ip) return false;
+  
+  const config = await db('system_config').where('key', 'allowed_ip_ranges').first();
+  if (!config || !config.value) return true; // If no config, assume all IPs allowed
+  
+  try {
+    const allowedRanges = JSON.parse(config.value);
+    if (!Array.isArray(allowedRanges) || allowedRanges.length === 0) return true;
+
+    // Simple string match for MVP (In production, use CIDR parsing library like ip6addr)
+    // Here we just check if the IP exactly matches one of the allowed IPs or starts with the subnet
+    return allowedRanges.some(range => {
+      const base = range.split('/')[0];
+      return ip === base || ip.startsWith(base.split('.').slice(0, 3).join('.'));
+    });
+  } catch (e) {
+    console.error('Error parsing allowed_ip_ranges', e);
+    return true; // Allow by default if config is broken
+  }
 }
 
 /**

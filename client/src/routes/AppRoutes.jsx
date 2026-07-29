@@ -22,6 +22,7 @@ import ReportPage from '../pages/reports/ReportPage';
 import HolidayPage from '../pages/settings/HolidayPage';
 import ShiftPage from '../pages/settings/ShiftPage';
 import AuditLogPage from '../pages/settings/AuditLogPage';
+import SystemSettingsPage from '../pages/settings/SystemSettingsPage';
 
 function PrivateRoute({ children }) {
   const { isAuthenticated } = useSelector((state) => state.auth);
@@ -80,6 +81,7 @@ export default function AppRoutes() {
         <Route path="settings/holidays" element={<HolidayPage />} />
         <Route path="settings/shifts" element={<ShiftPage />} />
         <Route path="settings/audit" element={<AuditLogPage />} />
+        <Route path="settings/system" element={<SystemSettingsPage />} />
       </Route>
 
       {/* 404 */}

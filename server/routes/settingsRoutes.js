@@ -20,4 +20,8 @@ router.put('/shifts/:id', settingsController.updateShift);
 // Audit Logs (Super Admin only for logs is better, but keeping HRD allowed for now as per simple RBAC)
 router.get('/audit-logs', requireRole(['super_admin']), settingsController.getAuditLogs);
 
+// System Config
+router.get('/config', settingsController.getConfig);
+router.put('/config', settingsController.updateConfig);
+
 module.exports = router;

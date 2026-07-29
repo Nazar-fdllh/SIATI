@@ -1,6 +1,7 @@
 const holidayService = require('../services/holidayService');
 const shiftService = require('../services/shiftService');
 const auditLogService = require('../services/auditLogService');
+const systemConfigService = require('../services/systemConfigService');
 
 // --- Holiday Controllers ---
 async function getHolidays(req, res, next) {
@@ -62,8 +63,24 @@ async function getAuditLogs(req, res, next) {
   } catch (error) { next(error); }
 }
 
+// --- System Config Controllers ---
+async function getConfig(req, res, next) {
+  try {
+    const data = await systemConfigService.getConfig();
+    res.json({ success: true, data });
+  } catch (error) { next(error); }
+}
+
+async function updateConfig(req, res, next) {
+  try {
+    await systemConfigService.updateConfig(req.body);
+    res.json({ success: true, message: 'Pengaturan sistem berhasil diperbarui' });
+  } catch (error) { next(error); }
+}
+
 module.exports = {
   getHolidays, createHoliday, deleteHoliday,
   getShifts, createShift, updateShift,
-  getAuditLogs
+  getAuditLogs,
+  getConfig, updateConfig
 };

@@ -100,6 +100,12 @@ async function startServer() {
   }
 }
 
-startServer();
+// Only start the server if this file is run directly (not imported as a module by Vercel)
+if (require.main === module) {
+  startServer();
+} else {
+  // If imported by Vercel, just connect DB and export app
+  connectDB().catch(console.error);
+}
 
 module.exports = app;
