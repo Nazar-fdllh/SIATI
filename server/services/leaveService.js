@@ -1,6 +1,7 @@
 const { db } = require('../config/database');
 const { AppError } = require('../middleware/errorHandler');
 const { formatDate, calculateWorkDays } = require('@siati/shared');
+const emailService = require('./emailService');
 
 /**
  * Create leave request
@@ -79,7 +80,7 @@ async function createLeaveRequest(employeeId, data) {
     const approverUser = await db('users')
       .join('employees', 'users.id', 'employees.user_id')
       .where('employees.id', approver.id)
-      .select('users.id')
+      .select('users.id', 'users.email')
       .first();
 
     if (approverUser) {
@@ -90,6 +91,11 @@ async function createLeaveRequest(employeeId, data) {
         message: `${employee.full_name} mengajukan ${leaveType.name} (${totalDays} hari) pada ${data.startDate} s/d ${data.endDate}.`,
         link: `/leave/approval`,
       });
+      
+      // Send email asynchronously
+      emailService.sendLeaveRequestNotification(
+        approverUser.email, employee.full_name, leaveType.name, data.startDate, data.endDate, totalDays
+      ).catch(err => console.error(err));
     }
   }
 
@@ -203,7 +209,7 @@ async function approveLeave(leaveRequestId, approverId, remarks) {
 
       // Notify HRD
       const hrdUser = await db('users').join('employees', 'users.id', 'employees.user_id')
-        .where('employees.id', hrdEmployee.id).select('users.id').first();
+        .where('employees.id', hrdEmployee.id).select('users.id', 'users.email', 'employees.full_name').first();
       if (hrdUser) {
         await db('notifications').insert({
           user_id: hrdUser.id,
@@ -212,6 +218,14 @@ async function approveLeave(leaveRequestId, approverId, remarks) {
           message: `Pengajuan cuti memerlukan persetujuan Anda.`,
           link: '/leave/approval',
         });
+        
+        // Also get employee detail for email
+        const empDetail = await db('employees').where('id', leaveRequest.employee_id).select('full_name').first();
+        const ltDetail = await db('leave_types').where('id', leaveRequest.leave_type_id).select('name').first();
+        
+        emailService.sendLeaveRequestNotification(
+          hrdUser.email, empDetail.full_name, ltDetail.name, formatDate(leaveRequest.start_date), formatDate(leaveRequest.end_date), leaveRequest.total_days
+        ).catch(console.error);
       }
 
       return { status: 'approved_l1', message: 'Disetujui oleh Supervisor. Menunggu persetujuan HRD.' };
@@ -257,7 +271,12 @@ async function approveLeave(leaveRequestId, approverId, remarks) {
 
   // Notify employee
   const employeeUser = await db('users').join('employees', 'users.id', 'employees.user_id')
-    .where('employees.id', leaveRequest.employee_id).select('users.id').first();
+    .join('leave_types', 'leave_requests.leave_type_id', 'leave_types.id')
+    .where('employees.id', leaveRequest.employee_id)
+    .where('leave_requests.id', leaveRequestId)
+    .select('users.id', 'users.email', 'employees.full_name', 'leave_types.name as leave_type_name')
+    .first();
+    
   if (employeeUser) {
     await db('notifications').insert({
       user_id: employeeUser.id,
@@ -266,6 +285,11 @@ async function approveLeave(leaveRequestId, approverId, remarks) {
       message: `Pengajuan cuti Anda telah disetujui.`,
       link: '/leave/history',
     });
+    
+    emailService.sendLeaveStatusUpdate(
+      employeeUser.email, employeeUser.full_name, employeeUser.leave_type_name, 
+      formatDate(leaveRequest.start_date), formatDate(leaveRequest.end_date), 'approved', remarks
+    ).catch(console.error);
   }
 
   return { status: 'approved', message: 'Cuti berhasil disetujui.' };
@@ -294,7 +318,12 @@ async function rejectLeave(leaveRequestId, approverId, remarks) {
 
   // Notify employee
   const employeeUser = await db('users').join('employees', 'users.id', 'employees.user_id')
-    .where('employees.id', leaveRequest.employee_id).select('users.id').first();
+    .join('leave_types', 'leave_requests.leave_type_id', 'leave_types.id')
+    .where('employees.id', leaveRequest.employee_id)
+    .where('leave_requests.id', leaveRequestId)
+    .select('users.id', 'users.email', 'employees.full_name', 'leave_types.name as leave_type_name')
+    .first();
+    
   if (employeeUser) {
     await db('notifications').insert({
       user_id: employeeUser.id,
@@ -303,6 +332,11 @@ async function rejectLeave(leaveRequestId, approverId, remarks) {
       message: `Pengajuan cuti Anda ditolak. Alasan: ${remarks || 'Tidak ada keterangan'}`,
       link: '/leave/history',
     });
+    
+    emailService.sendLeaveStatusUpdate(
+      employeeUser.email, employeeUser.full_name, employeeUser.leave_type_name, 
+      formatDate(leaveRequest.start_date), formatDate(leaveRequest.end_date), 'rejected', remarks
+    ).catch(console.error);
   }
 
   return { status: 'rejected', message: 'Cuti ditolak.' };

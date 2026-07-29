@@ -17,6 +17,12 @@ import EmployeeListPage from '../pages/employee/EmployeeListPage';
 import EmployeeDetailPage from '../pages/employee/EmployeeDetailPage';
 import EmployeeFormPage from '../pages/employee/EmployeeFormPage';
 
+// Phase 3 components
+import ReportPage from '../pages/reports/ReportPage';
+import HolidayPage from '../pages/settings/HolidayPage';
+import ShiftPage from '../pages/settings/ShiftPage';
+import AuditLogPage from '../pages/settings/AuditLogPage';
+
 function PrivateRoute({ children }) {
   const { isAuthenticated } = useSelector((state) => state.auth);
   return isAuthenticated ? children : <Navigate to="/login" replace />;
@@ -67,6 +73,13 @@ export default function AppRoutes() {
         <Route path="employees/new" element={<EmployeeFormPage />} />
         <Route path="employees/:id" element={<EmployeeDetailPage />} />
         <Route path="employees/:id/edit" element={<EmployeeFormPage />} />
+        {/* Reports */}
+        <Route path="reports/attendance" element={<ReportPage />} />
+
+        {/* Settings Routes */}
+        <Route path="settings/holidays" element={<HolidayPage />} />
+        <Route path="settings/shifts" element={<ShiftPage />} />
+        <Route path="settings/audit" element={<AuditLogPage />} />
       </Route>
 
       {/* 404 */}
