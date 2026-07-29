@@ -28,10 +28,14 @@ import {
 
 const mainMenuItems = [
   { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
-  { text: 'Absensi', icon: <AttendanceIcon />, path: '/attendance' },
-  { text: 'Pengajuan Cuti', icon: <LeaveIcon />, path: '/leave/request' },
+  { text: 'Check-In/Out', icon: <AttendanceIcon />, path: '/attendance/checkin' },
+  { text: 'Riwayat Absensi', icon: <AttendanceIcon />, path: '/attendance/history' },
+  { text: 'Monitor Absensi', icon: <AttendanceIcon />, path: '/attendance/monitor', roles: ['hrd', 'super_admin'] },
+  { text: 'Ajukan Cuti', icon: <LeaveIcon />, path: '/leave/request' },
+  { text: 'Riwayat Cuti', icon: <LeaveIcon />, path: '/leave/history' },
+  { text: 'Saldo Cuti', icon: <LeaveIcon />, path: '/leave/balance' },
+  { text: 'Persetujuan Cuti', icon: <LeaveIcon />, path: '/leave/approval', roles: ['supervisor', 'hrd', 'super_admin'] },
   { text: 'Data Karyawan', icon: <EmployeeIcon />, path: '/employees', roles: ['super_admin', 'hrd'] },
-  { text: 'Laporan', icon: <ReportIcon />, path: '/reports/attendance', roles: ['super_admin', 'hrd', 'supervisor'] },
 ];
 
 const settingsMenuItems = [

@@ -5,6 +5,18 @@ import LoginPage from '../pages/auth/LoginPage';
 import DashboardPage from '../pages/dashboard/DashboardPage';
 import NotFoundPage from '../pages/errors/NotFoundPage';
 
+// Phase 2 components
+import CheckInOutPage from '../pages/attendance/CheckInOutPage';
+import HistoryPage from '../pages/attendance/HistoryPage';
+import MonitorPage from '../pages/attendance/MonitorPage';
+import LeaveRequestPage from '../pages/leave/LeaveRequestPage';
+import LeaveHistoryPage from '../pages/leave/LeaveHistoryPage';
+import LeaveBalancePage from '../pages/leave/LeaveBalancePage';
+import LeaveApprovalPage from '../pages/leave/LeaveApprovalPage';
+import EmployeeListPage from '../pages/employee/EmployeeListPage';
+import EmployeeDetailPage from '../pages/employee/EmployeeDetailPage';
+import EmployeeFormPage from '../pages/employee/EmployeeFormPage';
+
 function PrivateRoute({ children }) {
   const { isAuthenticated } = useSelector((state) => state.auth);
   return isAuthenticated ? children : <Navigate to="/login" replace />;
@@ -39,12 +51,22 @@ export default function AppRoutes() {
       >
         <Route index element={<Navigate to="/dashboard" replace />} />
         <Route path="dashboard" element={<DashboardPage />} />
-        {/* Placeholder routes for future modules */}
-        <Route path="attendance" element={<DashboardPage />} />
-        <Route path="leave/*" element={<DashboardPage />} />
-        <Route path="employees/*" element={<DashboardPage />} />
-        <Route path="reports/*" element={<DashboardPage />} />
-        <Route path="settings/*" element={<DashboardPage />} />
+        {/* Attendance Routes */}
+        <Route path="attendance/checkin" element={<CheckInOutPage />} />
+        <Route path="attendance/history" element={<HistoryPage />} />
+        <Route path="attendance/monitor" element={<MonitorPage />} />
+
+        {/* Leave Routes */}
+        <Route path="leave/request" element={<LeaveRequestPage />} />
+        <Route path="leave/history" element={<LeaveHistoryPage />} />
+        <Route path="leave/balance" element={<LeaveBalancePage />} />
+        <Route path="leave/approval" element={<LeaveApprovalPage />} />
+
+        {/* Employee Routes */}
+        <Route path="employees" element={<EmployeeListPage />} />
+        <Route path="employees/new" element={<EmployeeFormPage />} />
+        <Route path="employees/:id" element={<EmployeeDetailPage />} />
+        <Route path="employees/:id/edit" element={<EmployeeFormPage />} />
       </Route>
 
       {/* 404 */}
